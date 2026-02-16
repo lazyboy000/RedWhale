@@ -22,7 +22,7 @@ public class Security {
      *
      * @param valueToEnc 暗号化する文字列
      * @return Base64でエンコードされた暗号化後の文字列
-     * @throws Exception 暗号化に失敗した場合
+     * @throws Exception 暗号化に失敗した場合eit
      */
     public static String encrypt(String valueToEnc) throws Exception {
         Key key = generateKey();
