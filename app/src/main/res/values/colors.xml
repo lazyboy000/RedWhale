@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
+    <!-- Telegram-like color palette -->
+    <color name="telegram_primary">#212d3b</color>
+    <color name="telegram_primary_dark">#18222d</color>
+    <color name="telegram_accent">#4a9fdf</color>
+    <color name="telegram_background">#18222d</color>
+
     <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+
+    <!-- Message bubble colors -->
+    <color name="telegram_sent_bubble">#005c4b</color>
+    <color name="telegram_received_bubble">#202c33</color>
 </resources>

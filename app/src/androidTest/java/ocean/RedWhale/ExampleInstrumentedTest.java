@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
 /**
- * Instrumented test, which will execute on an Android device.
+ * インストルメンテーションテスト（Androidデバイス上で実行されるテスト）。
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
@@ -19,8 +19,9 @@ import static org.junit.Assert.*;
 public class ExampleInstrumentedTest {
     @Test
     public void useAppContext() {
-        // Context of the app under test.
+        // テスト対象アプリのコンテキストを取得
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        // パッケージ名が期待通りであるかを確認
         assertEquals("ocean.RedWhale", appContext.getPackageName());
     }
 }
