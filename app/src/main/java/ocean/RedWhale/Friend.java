@@ -31,7 +31,7 @@ public class Friend {
         this.address = address;
     }
 
-    // --- Getters ---
+    //Getters
     public int getId() {
         return id;
     }
@@ -44,7 +44,7 @@ public class Friend {
         return address;
     }
 
-    // --- Setters ---
+    // Setters
     public void setId(int id) {
         this.id = id;
     }

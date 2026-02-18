@@ -55,14 +55,12 @@ public class LoginActivity extends AppCompatActivity {
 
         // 新規登録テキストのクリックリスナー
         tvSignUp.setOnClickListener(v -> {
-            Toast.makeText(this, "Sign Up - Coming soon!", Toast.LENGTH_LONG).show();
-            // 後で実装: startActivity(new Intent(this, SignUpActivity.class));
+            startActivity(new Intent(this, SignUpActivity.class));
         });
 
         // パスワード忘れテキストのクリックリスナー
         tvForgot.setOnClickListener(v -> {
-            Toast.makeText(this, "Forgot Password? Email reset sent to your account.", Toast.LENGTH_LONG).show();
-            // 後で実装: パスワードリセット用のダイアログか画面を開く
+            startActivity(new Intent(this, ForgotPasswordActivity.class));
         });
     }
 }

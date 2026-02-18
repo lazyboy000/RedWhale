@@ -213,5 +213,6 @@ public class DeviceListActivity extends AppCompatActivity {
             unregisterReceiver(bluetoothDeviceListener);
         }
     }
+
 }
 

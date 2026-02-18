@@ -16,6 +16,23 @@
     <string name="btn_sign_up">Sign Up</string>
     <string name="btn_forgot_password">Forgot Password?</string>
 
+    <!-- Sign Up Screen -->
+    <string name="signup_title">Create Account</string>
+    <string name="signup_subtitle">Sign up to get started</string>
+    <string name="hint_confirm_password">Confirm Password</string>
+    <string name="login_link">Already have an account? Login</string>
+    <string name="passwords_do_not_match">Passwords do not match</string>
+    <string name="signup_successful">Sign up successful!</string>
+    <string name="please_enter_email">Please enter your email</string>
+
+
+    <!-- Forgot Password Screen -->
+    <string name="forgot_password_title">Forgot Password</string>
+    <string name="forgot_password_subtitle">Enter your email to reset your password</string>
+    <string name="btn_send_reset_link">Send Reset Link</string>
+    <string name="back_to_login_link">Back to Login</string>
+    <string name="password_reset_link_sent">Password reset link sent to %s</string>
+
     <!-- Navigation Drawer -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
