@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">RedWhale</string>
+    <string name="str_lable_btn_send">送信</string>
+    <string name="str_menu_search_devices">デバイスを検索</string>
+    <string name="str_menu_bluetooth_on">Bluetoothをオンにする</string>
+    <string name="str_paired_devices">ペアリング済みデバイス</string>
+    <string name="str_available_devices">利用可能なデバイス</string>
+    <string name="str_menu_scan_devices">デバイスをスキャン</string>
+
+    <string name="signup_title">RedWhaleへようこそ</string>
+    <string name="signup_subtitle">暗号化IDを生成します。\n電話番号やメールアドレスは不要です。</string>
+    <string name="signup_successful">セットアップ完了！</string>
+
+    <string name="navigation_drawer_open">ナビゲーションを開く</string>
+    <string name="navigation_drawer_close">ナビゲーションを閉じる</string>
+</resources>

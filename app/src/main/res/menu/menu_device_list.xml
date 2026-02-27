@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-<item
-    android:title="@string/str_menu_scan_devices"
-    android:icon="@drawable/ic_bluetooth_searching"
-    android:id="@+id/menu_scan_device"
-    app:showAsAction="always"
-    />
+    <item
+        android:title="手動でアドレスを入力"
+        android:id="@+id/menu_manual_entry"
+        app:showAsAction="never" />
+    <item
+        android:title="@string/str_menu_scan_devices"
+        android:icon="@drawable/ic_bluetooth_searching"
+        android:id="@+id/menu_scan_device"
+        app:showAsAction="always" />
 </menu>

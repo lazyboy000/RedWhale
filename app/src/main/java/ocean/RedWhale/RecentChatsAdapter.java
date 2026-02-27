@@ -55,6 +55,7 @@ public class RecentChatsAdapter extends RecyclerView.Adapter<RecentChatsAdapter.
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, MainActivity.class);
             intent.putExtra("deviceAddress", chat.getFriendAddress());
+            intent.putExtra("CHAT_NAME", chat.getFriendName());
             context.startActivity(intent);
         });
     }

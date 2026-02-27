@@ -2,8 +2,11 @@ package ocean.RedWhale;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,9 +20,13 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
 
+import android.os.PowerManager;
+import android.provider.Settings;
+import android.net.Uri;
+
 /**
- * メインのホーム画面となるアクティビティです。
- * ナビゲーションドロワーとフラグメントの管理を担当します。
+ * アプリのメイン画面（ハブ）です。
+ * ナビゲーションメニューと、チャット一覧・設定画面の切り替えを管理します。
  */
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -27,115 +34,169 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private MaterialToolbar toolbar;
     private NavigationView navigationView;
 
-    // デバイス選択画面からの結果を識別するためのリクエストコード
     private static final int SELECT_DEVICE = 102;
 
-    /**
-     * アクティビティが初めて作成されるときに呼び出されます。
-     * ツールバー、ドロワー、ナビゲーションビューを設定します。
-     * @param savedInstanceState 以前に保存されたアクティビティの状態
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        // ツールバー（画面上部のバー）の設定
         toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
 
+        // ナビゲーションメニュー（横から出るメニュー）の設定
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
 
-        // ドロワーのトグルを設定し、ツールバーとドロワーレイアウトをリンクします。
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
-                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+        if (drawerLayout != null && toolbar != null) {
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
+                    R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            drawerLayout.addDrawerListener(toggle);
+            toggle.syncState();
+        }
 
-        // ナビゲーションビューの項目クリックリスナーを設定します。
-        navigationView.setNavigationItemSelectedListener(this);
+        if (navigationView != null) {
+            navigationView.setNavigationItemSelectedListener(this);
+            // ユーザー情報（名前・Node ID）を非同期で読み込み
+            loadNavHeaderData();
+        }
 
-        // アクティビティが新しく作成された場合、デフォルトでChatsFragmentを表示します。
-        if (savedInstanceState == null) {
+        // 最初に表示する画面として「チャット一覧」をセット
+        if (savedInstanceState == null && findViewById(R.id.fragment_container) != null) {
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fragment_container, new ChatsFragment())
                     .commit();
-            navigationView.setCheckedItem(R.id.nav_chats);
-            toolbar.setTitle("Chats");
+            if (navigationView != null) {
+                navigationView.setCheckedItem(R.id.nav_chats);
+            }
+            if (toolbar != null) {
+                toolbar.setTitle("Chats");
+            }
+        }
+        
+        // バッテリー最適化設定のチェック（少し遅らせて実行）
+        getWindow().getDecorView().postDelayed(this::checkBatteryOptimization, 1000);
+    }
+
+    /**
+     * P2P通信を安定させるため、バッテリー制限の解除をユーザーに依頼します。
+     */
+    private void checkBatteryOptimization() {
+        if (isFinishing()) return;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+            if (pm != null && !pm.isIgnoringBatteryOptimizations(getPackageName())) {
+                try {
+                    Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                    intent.setData(Uri.parse("package:" + getPackageName()));
+                    startActivity(intent);
+                } catch (Exception e) {
+                    // 失敗しても無視
+                }
+            }
         }
     }
 
     /**
-     * ナビゲーションドロワーの項目が選択されたときに呼び出されます。
-     * 選択された項目に応じてフラグメントを切り替えます。
-     * @param item 選択されたメニュー項目
-     * @return イベントが処理された場合はtrue
+     * メニューの上部にユーザー名とNode IDを表示します。
      */
+    private void loadNavHeaderData() {
+        if (navigationView == null) return;
+        View headerView = navigationView.getHeaderView(0);
+        if (headerView == null) return;
+
+        TextView tvName = headerView.findViewById(R.id.nav_header_name);
+        TextView tvAddress = headerView.findViewById(R.id.nav_header_address);
+
+        new Thread(() -> {
+            // 保存されている情報を取得
+            SharedPreferences prefs = getSharedPreferences("RedWhalePrefs", MODE_PRIVATE);
+            String displayName = prefs.getString("display_name", "User");
+            
+            IdentityManager identityManager = new IdentityManager(this);
+            String nodeInfo;
+            if (identityManager.exists()) {
+                String address = identityManager.getIdentityAddress();
+                if (address != null) {
+                    if (address.length() > 16) {
+                        // 長いアドレスを短縮して表示
+                        nodeInfo = "Node ID: " + address.substring(0, 8) + "..." + address.substring(address.length() - 8);
+                    } else {
+                        nodeInfo = "Node ID: " + address;
+                    }
+                } else {
+                    nodeInfo = "Node ID: Unknown";
+                }
+            } else {
+                nodeInfo = "Node ID: Not Set";
+            }
+
+            // メインスレッドでUIを更新
+            runOnUiThread(() -> {
+                if (tvName != null) tvName.setText(displayName);
+                if (tvAddress != null) tvAddress.setText(nodeInfo);
+            });
+        }).start();
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Fragment selectedFragment = null;
         int itemId = item.getItemId();
 
-        // 選択された項目に基づいて表示するフラグメントを決定します。
+        // 選択されたメニューに応じて画面（フラグメント）を切り替え
         if (itemId == R.id.nav_chats) {
             selectedFragment = new ChatsFragment();
-            toolbar.setTitle("Chats");
-        } else if (itemId == R.id.nav_new_group) {
-            Toast.makeText(this, "New Group - Coming Soon!", Toast.LENGTH_SHORT).show();
-        } else if (itemId == R.id.nav_calls) {
-            selectedFragment = new CallsFragment();
-            toolbar.setTitle("Calls");
-        } else if (itemId == R.id.nav_contacts) {
-            selectedFragment = new ContactsFragment();
-            toolbar.setTitle("Contacts");
+            if (toolbar != null) toolbar.setTitle("チャット");
         } else if (itemId == R.id.nav_settings) {
             selectedFragment = new SettingsFragment();
-            toolbar.setTitle("Settings");
+            if (toolbar != null) toolbar.setTitle("設定");
         }
 
-        // フラグメントが選択された場合、現在のフラグメントを新しいものに置き換えます。
-        if (selectedFragment != null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, selectedFragment)
-                    .commit();
+        if (selectedFragment != null && !isFinishing()) {
+            try {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, selectedFragment)
+                        .commit();
+            } catch (Exception e) {
+                // エラー時は無視
+            }
         }
 
-        // ナビゲーションドロワーを閉じます。
-        drawerLayout.closeDrawer(GravityCompat.START);
+        // メニューを閉じる
+        if (drawerLayout != null) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        }
         return true;
     }
 
-    /**
-     * バックボタンが押されたときの処理。
-     * ドロワーが開いていれば閉じ、そうでなければデフォルトの動作をします。
-     */
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        // メニューが開いていれば閉じる
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
     }
 
-    /**
-     * 他のアクティビティから結果を受け取ったときに呼び出されます。
-     * この場合、DeviceListActivityからの結果を処理します。
-     * @param requestCode アクティビティを開始したときのリクエストコード
-     * @param resultCode アクティビティからの結果コード
-     * @param data 結果データを含むインテント
-     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        // デバイス選択画面から戻ってきた時の処理
         if (requestCode == SELECT_DEVICE && resultCode == Activity.RESULT_OK) {
             if (data != null) {
-                // DeviceListActivityからデバイスが選択されたら、MainActivityを開始してチャットします。
                 String address = data.getStringExtra("deviceAddress");
+                String name = data.getStringExtra("CHAT_NAME");
+                // チャット画面（MainActivity）を開始
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.putExtra("deviceAddress", address);
+                intent.putExtra("CHAT_NAME", name);
                 startActivity(intent);
             }
         }

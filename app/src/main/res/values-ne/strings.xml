@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">RedWhale</string>
+    <string name="str_lable_btn_send">पठाउनुहोस्</string>
+    <string name="str_menu_search_devices">यन्त्रहरू खोज्नुहोस्</string>
+    <string name="str_menu_bluetooth_on">ब्लुटुथ अन गर्नुहोस्</string>
+    <string name="str_paired_devices">जोडिएका यन्त्रहरू</string>
+    <string name="str_available_devices">उपलब्ध यन्त्रहरू</string>
+    <string name="str_menu_scan_devices">यन्त्रहरू स्क्यान गर्नुहोस्</string>
+
+    <string name="signup_title">RedWhale मा स्वागत छ</string>
+    <string name="signup_subtitle">सुरु गर्न आफ्नो प्रदर्शन नाम सेट गर्नुहोस्</string>
+    <string name="signup_successful">सेटअप सफल भयो!</string>
+
+    <string name="navigation_drawer_open">नेभिगेसन खोल्नुहोस्</string>
+    <string name="navigation_drawer_close">नेभिगेसन बन्द गर्नुहोस्</string>
+</resources>

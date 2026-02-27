@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">RedWhale</string>
+    <string name="str_lable_btn_send">ပို့ရန်</string>
+    <string name="str_menu_search_devices">စက်ပစ္စည်းများကို ရှာဖွေပါ</string>
+    <string name="str_menu_bluetooth_on">ဘလူးတုသ်ဖွင့်ပါ</string>
+    <string name="str_paired_devices">ချိတ်ဆက်ထားသော စက်များ</string>
+    <string name="str_available_devices">ရနိုင်သော စက်များ</string>
+    <string name="str_menu_scan_devices">စက်များကို စကင်ဖတ်ပါ</string>
+
+    <string name="signup_title">RedWhale မှကြိုဆိုပါသည်</string>
+    <string name="signup_subtitle">စတင်ရန် သင့်အမည်ကို သတ်မှတ်ပါ</string>
+    <string name="signup_successful">စနစ်ထည့်သွင်းခြင်း အောင်မြင်ပါသည်!</string>
+
+    <string name="navigation_drawer_open">လမ်းညွှန်ဖွင့်ပါ</string>
+    <string name="navigation_drawer_close">လမ်းညွှန်ပိတ်ပါ</string>
+</resources>

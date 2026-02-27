@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,23 +13,42 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 /**
- * 設定項目のリストをRecyclerViewに表示するためのアダプターです。
+ * 設定画面のリスト（RecyclerView）に各設定項目（SettingsItem）を
+ * どのように並べて表示するかを管理する「アダプター」クラスです。
  */
 public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.SettingsViewHolder> {
 
+    // 表示する設定項目のデータのリスト
     private final List<SettingsItem> settingsItems;
     private final Context context;
 
+    // 項目がタップされたときの動作を外（SettingsFragment）に伝えるための「耳（リスナー）」
+    public interface OnItemClickListener {
+        void onItemClick(SettingsItem item);
+    }
+    private OnItemClickListener listener;
+
+    /**
+     * コンストラクタ。アダプターの準備をします。
+     *
+     * @param context       画面の情報
+     * @param settingsItems リストに表示するデータ
+     */
     public SettingsAdapter(Context context, List<SettingsItem> settingsItems) {
         this.context = context;
         this.settingsItems = settingsItems;
     }
 
     /**
-     * 新しいViewHolderが作成されるときに呼び出されます。
-     * @param parent 親ビューグループ
-     * @param viewType ビュータイプ
-     * @return 新しいSettingsViewHolder
+     * リストがタップされたときに動く処理（リスナー）を登録します。
+     */
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
+    /**
+     * 新しい項目の「見た目（ビュー）」を作る必要があるときに呼ばれます。
+     * 1行分のデザイン（list_item_setting.xml）を読み込んでビューホルダーを返します。
      */
     @NonNull
     @Override
@@ -40,33 +58,36 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.Settin
     }
 
     /**
-     * ViewHolderにデータをバインド（設定）するときに呼び出されます。
-     * @param holder データを設定するViewHolder
-     * @param position データリスト内の位置
+     * 作った「見た目（ビュー）」に、実際の「データ（タイトルやアイコン）」を当てはめる処理です。
      */
     @Override
     public void onBindViewHolder(@NonNull SettingsViewHolder holder, int position) {
+        // 現在の行のデータを取得します
         SettingsItem item = settingsItems.get(position);
+        
+        // 画面部品（ImageViewやTextView）にデータをセットします
         holder.icon.setImageResource(item.getIconResId());
         holder.title.setText(item.getTitle());
         holder.subtitle.setText(item.getSubtitle());
 
-        // サブタイトルが空の場合は非表示にする
+        // 説明文（サブタイトル）がない場合は、空白を詰めて非表示にします
         if (item.getSubtitle() == null || item.getSubtitle().isEmpty()) {
             holder.subtitle.setVisibility(View.GONE);
         } else {
             holder.subtitle.setVisibility(View.VISIBLE);
         }
 
-        // アイテムクリック時のダミー処理
+        // この行（項目）がタップされた時の処理です
         holder.itemView.setOnClickListener(v -> {
-            Toast.makeText(context, item.getTitle() + " clicked", Toast.LENGTH_SHORT).show();
+            if (listener != null) {
+                // 外側（SettingsFragment）に「これがタップされましたよ」と伝えます
+                listener.onItemClick(item);
+            }
         });
     }
 
     /**
-     * リスト内のアイテムの総数を返します。
-     * @return アイテムの総数
+     * リストに表示するデータが全部でいくつあるかを返します。
      */
     @Override
     public int getItemCount() {
@@ -74,7 +95,8 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.Settin
     }
 
     /**
-     * 設定リストの各アイテムのビューを保持するためのViewHolderクラスです。
+     * リストの1行分の画面部品を裏側で保持（キャッシュ）しておくためのクラスです。
+     * 毎回探す（findViewById）と動きが遅くなるため、これを使って高速化しています。
      */
     public static class SettingsViewHolder extends RecyclerView.ViewHolder {
         ImageView icon;

@@ -1,37 +1,35 @@
 package ocean.RedWhale;
 
 /**
- * ユーザーの友達リスト内の連絡先を表すクラスです。
- * Bluetoothデバイスの連絡先に関する基本情報を含みます。
+ * ユーザーの友達リスト（連絡先）内の1人を表すクラスです。
+ * Bluetoothデバイスの基本情報と、暗号化に使われる公開鍵（アイデンティティ）を含みます。
  */
 public class Friend {
     private int id; // データベース上のID
     private String name; // 表示名
     private String address; // BluetoothのMACアドレス
+    private String identityAddress; // 暗号化用の公開鍵（アドレス）
 
     /**
-     * すべてのフィールドを持つコンストラクタ。
-     * @param id 友達のデータベースID
-     * @param name 友達の表示名
-     * @param address 友達のデバイスのBluetooth MACアドレス
+     * すべての項目を指定するコンストラクタです。
      */
-    public Friend(int id, String name, String address) {
+    public Friend(int id, String name, String address, String identityAddress) {
         this.id = id;
         this.name = name;
         this.address = address;
+        this.identityAddress = identityAddress;
     }
 
     /**
-     * IDなしのコンストラクタ（データベースに挿入する前の新しい友達を作成するため）。
-     * @param name 友達の表示名
-     * @param address 友達のデバイスのBluetooth MACアドレス
+     * IDを指定しないコンストラクタ（データベースに保存する前の新規作成用）です。
      */
-    public Friend(String name, String address) {
+    public Friend(String name, String address, String identityAddress) {
         this.name = name;
         this.address = address;
+        this.identityAddress = identityAddress;
     }
 
-    //Getters
+    // Getters
     public int getId() {
         return id;
     }
@@ -42,6 +40,10 @@ public class Friend {
 
     public String getAddress() {
         return address;
+    }
+
+    public String getIdentityAddress() {
+        return identityAddress;
     }
 
     // Setters
@@ -57,34 +59,28 @@ public class Friend {
         this.address = address;
     }
 
+    public void setIdentityAddress(String identityAddress) {
+        this.identityAddress = identityAddress;
+    }
+
     @Override
     public String toString() {
         return "Friend{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", address='" + address + '\'' +
+                ", identityAddress='" + identityAddress + '\'' +
                 '}';
     }
 
-    /**
-     * MACアドレスに基づいて二つのFriendオブジェクトが等しいかを判断します。
-     * @param o 比較対象のオブジェクト
-     * @return アドレスが同じであればtrue
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Friend friend = (Friend) o;
-
         return address != null ? address.equals(friend.address) : friend.address == null;
     }
 
-    /**
-     * オブジェクトのハッシュコードを返します。MACアドレスに基づいています。
-     * @return ハッシュコード
-     */
     @Override
     public int hashCode() {
         return address != null ? address.hashCode() : 0;

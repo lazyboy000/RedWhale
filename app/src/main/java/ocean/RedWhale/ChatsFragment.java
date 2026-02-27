@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,6 +29,7 @@ public class ChatsFragment extends Fragment {
     private RecentChatsAdapter adapter;
     private List<RecentChat> recentChats;
     private DatabaseHelper dbHelper;
+    private View emptyState;
 
     /**
      * フラグメントのUIを生成するために呼び出されます。
@@ -46,6 +48,13 @@ public class ChatsFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.recycler_view_chats);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        
+        // Initialize with empty list and attach adapter immediately to prevent "No adapter attached" error
+        recentChats = new ArrayList<>();
+        adapter = new RecentChatsAdapter(getContext(), recentChats);
+        recyclerView.setAdapter(adapter);
+
+        emptyState = view.findViewById(R.id.tv_empty_chats);
 
         dbHelper = new DatabaseHelper(getContext());
 
@@ -53,7 +62,9 @@ public class ChatsFragment extends Fragment {
         // フローティングアクションボタン（FAB）のクリックリスナー
         fab.setOnClickListener(v -> {
             // FABがクリックされたら、新しいチャットを開始するためにDeviceListActivityに移動
-            Toast.makeText(getContext(), "Select a device to start a new chat", Toast.LENGTH_SHORT).show();
+            if (getContext() != null) {
+                Toast.makeText(getContext(), R.string.msg_select_device_new_chat, Toast.LENGTH_SHORT).show();
+            }
             Intent intent = new Intent(getActivity(), DeviceListActivity.class);
             // DeviceListActivityからの結果は、親のHomeActivityのonActivityResultで処理される
             getActivity().startActivityForResult(intent, 102);
@@ -77,14 +88,32 @@ public class ChatsFragment extends Fragment {
      */
     private void loadRecentChats() {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (bluetoothAdapter != null) {
-            // 現在のユーザーのBluetoothアドレスを取得
-            @SuppressLint("MissingPermission") String currentUserAddress = bluetoothAdapter.getAddress();
-            // データベースヘルパーを使って最近のチャットを取得
-            recentChats = dbHelper.getRecentChats(currentUserAddress);
-            // アダプターを作成してRecyclerViewに設定
-            adapter = new RecentChatsAdapter(getContext(), recentChats);
-            recyclerView.setAdapter(adapter);
-        }
+        if (bluetoothAdapter == null) return;
+
+        @SuppressLint("MissingPermission") String currentUserAddress = bluetoothAdapter.getAddress();
+        
+        // データベース操作をバックグラウンドスレッドで実行
+        new Thread(() -> {
+            List<RecentChat> loadedChats = dbHelper.getRecentChats(currentUserAddress);
+            
+            // UIの更新はメインスレッドで行う
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(() -> {
+                    recentChats.clear();
+                    if (loadedChats != null) {
+                        recentChats.addAll(loadedChats);
+                    }
+
+                    if (recentChats.isEmpty()) {
+                        if (emptyState != null) emptyState.setVisibility(View.VISIBLE);
+                        recyclerView.setVisibility(View.GONE);
+                    } else {
+                        if (emptyState != null) emptyState.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.VISIBLE);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        }).start();
     }
 }

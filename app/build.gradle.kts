@@ -8,12 +8,16 @@ android {
 
     defaultConfig {
         applicationId = "ocean.RedWhale"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
@@ -30,7 +34,7 @@ android {
 }
 
 dependencies {
-    implementation("androidx.appcompat:appcompat:1.4.1")
+    implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.3")
     testImplementation("junit:junit:4.13.2")

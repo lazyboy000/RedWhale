@@ -13,7 +13,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         app:titleTextColor="@android:color/white"
-        app:navigationIcon="@drawable/ic_baseline_bluetooth"
+        app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
         app:navigationIconTint="?attr/colorOnPrimary"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -45,6 +45,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <ImageView
+            android:id="@+id/btn_attach"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="8dp"
+            android:src="@android:drawable/ic_menu_add"
+            app:tint="@color/telegram_accent" />
+
         <EditText
             android:id="@+id/editText"
             android:layout_width="0dp"
@@ -55,7 +63,8 @@
             android:inputType="text"
             android:padding="12dp"
             android:textColor="@android:color/white"
-            android:textColorHint="#aebac1" />
+            android:textColorHint="#aebac1"
+            android:layout_marginStart="4dp" />
 
         <ImageView
             android:id="@+id/btn"

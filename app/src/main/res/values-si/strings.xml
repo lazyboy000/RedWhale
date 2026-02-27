@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">RedWhale</string>
+    <string name="str_lable_btn_send">යවන්න</string>
+    <string name="str_menu_search_devices">උපාංග සොයන්න</string>
+    <string name="str_menu_bluetooth_on">බ්ලූටූත් සක්‍රිය කරන්න</string>
+    <string name="str_paired_devices">යුගල කළ උපාංග</string>
+    <string name="str_available_devices">ලබා ගත හැකි උපාංග</string>
+    <string name="str_menu_scan_devices">උපාංග ස්කෑන් කරන්න</string>
+
+    <string name="signup_title">RedWhale වෙත සාදරයෙන් පිළිගනිමු</string>
+    <string name="signup_subtitle">ආරම්භ කිරීමට ඔබේ නම සකසන්න</string>
+    <string name="signup_successful">පිහිටුවීම සාර්ථකයි!</string>
+
+    <string name="navigation_drawer_open">සංචාලනය විවෘත කරන්න</string>
+    <string name="navigation_drawer_close">සංචාලනය වසන්න</string>
+</resources>

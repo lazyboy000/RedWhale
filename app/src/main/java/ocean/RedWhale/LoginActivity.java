@@ -1,66 +1,78 @@
 package ocean.RedWhale;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Handler;
+import android.os.Looper;
+
 /**
- * ログイン画面を処理するアクティビティです。
- * ユーザー認証（現在はプレースホルダー）を管理します。
+ * アプリの開始地点（スプラッシュ画面）です。
+ * ユーザーが登録済みかどうかを確認し、適切な画面へ案内します。
  */
 public class LoginActivity extends AppCompatActivity {
+
+    private boolean isNavigating = false;
+    private final Handler splashHandler = new Handler(Looper.getMainLooper());
+    
+    // スプラッシュ表示後に実行されるナビゲーション処理
+    private final Runnable navigationRunnable = () -> {
+        if (isFinishing() || isNavigating) return;
+        isNavigating = true;
+
+        // バックグラウンドで登録状況をチェック
+        new Thread(() -> {
+            try {
+                // 1. 暗号化キー（ID）が存在するか確認
+                IdentityManager identityManager = new IdentityManager(LoginActivity.this);
+                boolean hasIdentity = identityManager.exists();
+
+                // 2. ユーザー名が保存されているか確認
+                SharedPreferences prefs = getSharedPreferences("RedWhalePrefs", MODE_PRIVATE);
+                String displayName = prefs != null ? prefs.getString("display_name", null) : null;
+
+                // 3. 判定結果に基づいて画面を切り替え
+                runOnUiThread(() -> {
+                    Intent intent;
+                    if (hasIdentity && displayName != null) {
+                        // 登録済みならホーム画面（チャット一覧）へ
+                        intent = new Intent(LoginActivity.this, HomeActivity.class);
+                    } else {
+                        // 未登録ならセットアップ画面へ
+                        intent = new Intent(LoginActivity.this, SignUpActivity.class);
+                    }
+                    startActivity(intent);
+                    finish();
+                });
+            } catch (Exception e) {
+                Log.e("LoginActivity", "画面遷移に失敗", e);
+                runOnUiThread(() -> {
+                    Toast.makeText(LoginActivity.this, "起動エラー: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    isNavigating = false;
+                });
+            }
+        }).start();
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // UI要素への参照を取得します。
-        EditText etEmail = findViewById(R.id.et_email);
-        EditText etPassword = findViewById(R.id.et_password);
-        Button btnLogin = findViewById(R.id.btn_login);
-        TextView tvSignUp = findViewById(R.id.tv_signup);
-        TextView tvForgot = findViewById(R.id.tv_forgot_password);
+        // 2秒間ロゴを表示した後にナビゲーションを実行
+        splashHandler.postDelayed(navigationRunnable, 2000);
+    }
 
-        // ログインボタンのクリックリスナー
-        btnLogin.setOnClickListener(v -> {
-            String email = etEmail.getText().toString().trim();
-            String password = etPassword.getText().toString().trim();
-
-            // 基本的な入力検証
-            if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            // 簡単なメール形式のチェック（任意）
-            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(this, "Please enter a valid email address", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            // ログイン成功の処理
-            Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
-
-            // HomeActivityに画面遷移します。
-            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-            startActivity(intent);
-            finish();  // 戻るボタンでログイン画面に戻れないように終了させます。
-        });
-
-        // 新規登録テキストのクリックリスナー
-        tvSignUp.setOnClickListener(v -> {
-            startActivity(new Intent(this, SignUpActivity.class));
-        });
-
-        // パスワード忘れテキストのクリックリスナー
-        tvForgot.setOnClickListener(v -> {
-            startActivity(new Intent(this, ForgotPasswordActivity.class));
-        });
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // メモリリーク防止のため、未実行のタスクを削除
+        splashHandler.removeCallbacks(navigationRunnable);
     }
 }

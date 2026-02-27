@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 /**
- * チャットセッションのリストをRecyclerViewに表示するためのアダプターです。
- * 各項目にはアバター、名前、最終メッセージ、タイムスタンプが含まれます。
+ * チャットの会話リスト（RecyclerView）を表示するためのアダプターです。
+ * 相手のアイコン、名前、最後のメッセージ、時間を1行ずつ並べて表示します。
  */
 public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatViewHolder> {
 
@@ -26,23 +26,23 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatVi
     }
 
     /**
-     * RecyclerViewによって呼び出され、新しいViewHolderを作成します。
-     * @param parent ViewHolderが属するViewGroup
-     * @param viewType ビューのタイプ
-     * @return 新しいChatViewHolderインスタンス
+     * 新しい1行分の見た目（ビュー）を作る必要があるときに呼ばれます。
+     * @param parent 親のレイアウト
+     * @param viewType 見た目の種類
+     * @return 新しく作ったViewHolder（画面部品の入れ物）
      */
     @NonNull
     @Override
     public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // list_item_chatレイアウトをインフレートしてビューを作成
+        // list_item_chat.xml というデザインファイルを読み込んでビューを作ります
         View view = LayoutInflater.from(context).inflate(R.layout.list_item_chat, parent, false);
         return new ChatViewHolder(view);
     }
 
     /**
-     * RecyclerViewによって呼び出され、指定された位置のデータをViewHolderにバインドします。
-     * @param holder 更新するViewHolder
-     * @param position データセット内のアイテムの位置
+     * 作ったビューに、実際のチャットデータをセットします。
+     * @param holder データをセットする入れ物
+     * @param position 何番目のデータか
      */
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
@@ -52,19 +52,18 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatVi
         holder.timestamp.setText(item.getTimestamp());
         holder.avatar.setImageResource(item.getAvatarResId());
 
-        // アイテムがクリックされたときの処理
+        // その行がタップされた時の動作です
         holder.itemView.setOnClickListener(v -> {
-            // チャットがクリックされたらMainActivityを開く
+            // タップされたらチャット画面（MainActivity）を開きます
             Intent intent = new Intent(context, MainActivity.class);
-            // オプション：MainActivityにデータを渡す
+            // 相手の名前を次の画面に渡します
             intent.putExtra("CHAT_NAME", item.getName());
             context.startActivity(intent);
         });
     }
 
     /**
-     * データセット内のアイテムの総数を返します。
-     * @return アイテムの総数
+     * リストに表示するデータが全部でいくつあるかを返します。
      */
     @Override
     public int getItemCount() {
@@ -72,7 +71,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatVi
     }
 
     /**
-     * リストの各アイテムのビュー（UI要素）を保持するViewHolderクラスです。
+     * 1行分の画面部品（アイコンやテキスト）をキャッシュしておくためのクラスです。
      */
     public static class ChatViewHolder extends RecyclerView.ViewHolder {
         ImageView avatar;

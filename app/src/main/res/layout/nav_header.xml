@@ -23,8 +23,11 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
-        android:id="@+id/nav_header_phone"
+        android:id="@+id/nav_header_address"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="+1 234 567 8900" />
+        android:text="Address: Unknown"
+        android:textSize="12sp"
+        android:ellipsize="middle"
+        android:maxLines="1" />
 </LinearLayout>

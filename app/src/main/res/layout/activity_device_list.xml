@@ -8,29 +8,57 @@
     tools:context=".DeviceListActivity">
 
     <ProgressBar
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_gravity="center"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
         android:id="@+id/progress_scan_devices"
         android:visibility="gone"/>
 
     <TextView
         android:text="@string/str_paired_devices"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:textStyle="bold"
+        android:textColor="?attr/colorPrimary" />
 
     <ListView
         android:id="@+id/list_paired_devices"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:minHeight="40dp" />
+    
+    <TextView
+        android:id="@+id/tv_empty_paired"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No paired devices"
+        android:padding="16dp"
+        android:gravity="center"
+        android:visibility="gone" />
 
     <TextView
         android:text="@string/str_available_devices"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:textStyle="bold"
+        android:textColor="?attr/colorPrimary" />
+    
     <ListView
         android:id="@+id/list_available_devices"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:minHeight="40dp" />
+
+    <TextView
+        android:id="@+id/tv_empty_available"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No devices found"
+        android:padding="16dp"
+        android:gravity="center"
+        android:visibility="gone" />
 
 </LinearLayout>
